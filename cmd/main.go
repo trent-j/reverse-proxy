@@ -1,27 +1,21 @@
 package main
 
 import (
-	"flag"
-	"fmt"
 	"log"
 	"net/http"
 	"net/http/httputil"
 	"net/url"
+	"os"
 	"strings"
 )
 
 func main() {
 
-	var (
-		bpDevURL = flag.String("url", "", "bp-dev url")
-		cert     = flag.String("cert", "/app/bp-dev.crt", "path to SSL certificate")
-		key      = flag.String("key", "/app/bp-dev.key", "path to SSL certificate key")
-		port     = flag.Int("port", 9000, "port to listen on")
-	)
+	bpDevURL := os.Getenv("BP_DEV_URL")
+	cert := os.Getenv("GHES_CERT")
+	key := os.Getenv("GHES_KEY")
 
-	flag.Parse()
-
-	bpDev, _ := url.Parse(*bpDevURL)
+	bpDev, _ := url.Parse(bpDevURL)
 
 	director := func(req *http.Request) {
 		req.URL.Scheme = bpDev.Scheme
@@ -35,5 +29,7 @@ func main() {
 		proxy.ServeHTTP(w, r)
 	})
 
-	log.Fatal(http.ListenAndServeTLS(fmt.Sprintf(":%d", *port), *cert, *key, nil))
+	log.Printf("Proxy listening on port: %d", 9000)
+
+	log.Fatal(http.ListenAndServeTLS(":9000", cert, key, nil))
 }

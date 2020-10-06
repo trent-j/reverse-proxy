@@ -11,4 +11,4 @@ build: clean
 
 .PHONY: docker-build
 docker-build:
-	@docker build -t ghcr.io/trent-j/reverse-proxy -f Dockerfile .
+	@docker build -t ghcr.io/trent-j/reverse-proxy:v2 -f Dockerfile .

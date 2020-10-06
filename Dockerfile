@@ -13,12 +13,8 @@ FROM octofactory.githubapp.com/github-docker/go/release:$GO_VERSION
 WORKDIR /app
 
 COPY --from=build /app/bin ./
-COPY --from=build /app/bp-dev.crt ./bp-dev.crt
-COPY --from=build /app/bp-dev.key ./bp-dev.key
-COPY --from=build /app/root-ca.pem /usr/local/share/ca-certificates/root-ca.pem
 
 RUN apt-get update && \
-    apt-get install -y ca-certificates && \
-    update-ca-certificates --fresh
+    apt-get install -y ca-certificates
 
-ENTRYPOINT ["./reverse-proxy"]
+ENTRYPOINT bash -c "cp /tmp/certs/ghes-root-ca.pem /usr/local/share/ca-certificates/ && update-ca-certificates --fresh && ./reverse-proxy"
